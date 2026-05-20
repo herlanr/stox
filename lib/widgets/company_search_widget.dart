@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stox/services/StockService.dart';
+
+import '../pages/search_results.dart';
 
 class CompanySearchWidget extends StatefulWidget {
   @override
@@ -6,13 +9,22 @@ class CompanySearchWidget extends StatefulWidget {
 }
 
 class _CompanySearchWidgetState extends State<CompanySearchWidget> {
-  final TextEditingController _controller = TextEditingController();
 
-  void searchCompany() {
+  final TextEditingController _controller = TextEditingController();
+  final StockService stockService = StockService();
+
+  void searchCompany() async {
     final text = _controller.text;
     print("Search parameter = $text");
 
-    // api.searchCompanies(text);
+    final results = await stockService.search(text);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchResultsPage(data: results),
+      ),
+    );
   }
 
   @override

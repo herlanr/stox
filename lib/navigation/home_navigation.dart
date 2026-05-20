@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../pages/favorites.dart';
 import '../pages/home.dart';
-import '../pages/search_results.dart';
 import '../pages/settings.dart';
 
 class HomeNavigation extends StatefulWidget {
@@ -16,8 +15,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
   final List<Widget> _pages = [
     HomePage(),
     FavoritesPage(),
-    SettingsPage(),
-    SearchResultsPage()
+    SettingsPage()
   ];
 
   @override
