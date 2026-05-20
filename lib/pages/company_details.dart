@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/stock.dart';
+import '../services/FavoriteService.dart';
 import '../widgets/info_row.dart';
 
 class CompanyDetailsPage extends StatefulWidget {
@@ -24,7 +25,8 @@ class _CompanyDetailsPageState extends State<CompanyDetailsPage> {
     stock = widget.stock;
   }
 
-  void toggleFavorite() {
+  void toggleFavorite() async {
+    await FavoritesService.toggleFavorite(stock.symbol);
     setState(() {
       stock.isFavorite = !stock.isFavorite;
     });

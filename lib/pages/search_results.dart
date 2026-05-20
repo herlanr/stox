@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/stock.dart';
+import '../services/FavoriteService.dart';
 import 'company_details.dart';
 
 class SearchResultsPage extends StatefulWidget {
@@ -18,11 +19,23 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   void initState() {
     super.initState();
     stocks = widget.data;
+    _syncFavorites();
   }
 
-  void toggleFavorite(int index) {
+  Future<void> _syncFavorites() async {
+    final favorites = await FavoritesService.getFavorites();
     setState(() {
-      stocks[index].isFavorite = !stocks[index].isFavorite;
+      for (var stock in stocks) {
+        stock.isFavorite = favorites.contains(stock.symbol);
+      }
+    });
+  }
+
+  void toggleFavorite(int index) async {
+    final stock = stocks[index];
+    await FavoritesService.toggleFavorite(stock.symbol);
+    setState(() {
+      stock.isFavorite = !stock.isFavorite;
     });
   }
 
@@ -66,7 +79,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   builder: (context) =>
                       CompanyDetailsPage(stock: stock),
                 ),
-              );
+              ).then((_) => _syncFavorites());
             },
           );
         },
