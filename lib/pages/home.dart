@@ -22,42 +22,35 @@ class _HomePageState extends State<HomePage> {
     _loadTopStocks();
   }
 
-  Future<void> _loadTopStocks() async {
-    try {
-      final stocks = await _stockService.getTopGainers();
-      final favorites = await FavoritesService.getFavorites();
+  // Ganz simpel: Daten laden und UI direkt aktualisieren
+  void _loadTopStocks() async {
+    final stocks = await _stockService.getTopGainers();
+    final favorites = await FavoritesService.getFavorites();
 
-      for (var stock in stocks) {
-        stock.isFavorite = favorites.contains(stock.symbol);
-      }
-
-      if (mounted) {
-        setState(() {
-          _topStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Silently handle error
+    for (var stock in stocks) {
+      stock.isFavorite = favorites.contains(stock.symbol);
     }
+
+    setState(() {
+      _topStocks = stocks;
+    });
   }
 
-  Future<void> _syncFavorites() async {
+  // Nur die Favoriten-Herzen aktualisieren
+  void _syncFavorites() async {
     final favorites = await FavoritesService.getFavorites();
-    if (mounted) {
-      setState(() {
-        for (var stock in _topStocks) {
-          stock.isFavorite = favorites.contains(stock.symbol);
-        }
-      });
-    }
+
+    setState(() {
+      for (var stock in _topStocks) {
+        stock.isFavorite = favorites.contains(stock.symbol);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Stox"),
-      ),
+      appBar: AppBar(title: const Text("Stox")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -67,52 +60,44 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             const Text(
               "Top Gainers",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Expanded(
               child: _topStocks.isEmpty
                   ? const Center(child: Text("No top stocks available"))
                   : ListView.builder(
-                      itemCount: _topStocks.length,
-                      itemBuilder: (context, index) {
-                        final stock = _topStocks[index];
-
-                        return ListTile(
-                          title: Text(stock.name),
-                          subtitle: Text("${stock.symbol} • ${stock.country}"),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "\$${stock.price.toStringAsFixed(2)}",
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "+${stock.percentChange.toStringAsFixed(2)}%",
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CompanyDetailsPage(stock: stock),
-                              ),
-                            ).then((_) => _syncFavorites());
-                          },
-                        );
-                      },
+                itemCount: _topStocks.length,
+                itemBuilder: (context, index) {
+                  final stock = _topStocks[index];
+                  return ListTile(
+                    title: Text(stock.name),
+                    subtitle: Text("${stock.symbol} • ${stock.country}"),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "\$${stock.price.toStringAsFixed(2)}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "+${stock.percentChange.toStringAsFixed(2)}%",
+                          style: const TextStyle(color: Colors.green, fontSize: 12),
+                        ),
+                      ],
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CompanyDetailsPage(stock: stock),
+                        ),
+                      ).then((_) => _syncFavorites());
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

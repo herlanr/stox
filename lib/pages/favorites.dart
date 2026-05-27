@@ -14,7 +14,6 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   final StockService _stockService = StockService();
   List<Stock> _favoriteStocks = [];
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -23,10 +22,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> _loadFavorites() async {
-    setState(() {
-      _isLoading = true;
-    });
-
     final favorites = await FavoritesService.getFavorites();
     final allStocks = await _stockService.loadStocks();
 
@@ -36,14 +31,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
         stock.isFavorite = isFav;
         return isFav;
       }).toList();
-      _isLoading = false;
     });
   }
 
   void _toggleFavorite(int index) async {
     final stock = _favoriteStocks[index];
     await FavoritesService.toggleFavorite(stock.symbol);
-    
+
     setState(() {
       _favoriteStocks.removeAt(index);
     });
@@ -55,43 +49,41 @@ class _FavoritesPageState extends State<FavoritesPage> {
       appBar: AppBar(
         title: const Text("Favorites"),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _favoriteStocks.isEmpty
-              ? const Center(child: Text("No favorites yet"))
-              : ListView.builder(
-                  itemCount: _favoriteStocks.length,
-                  itemBuilder: (context, index) {
-                    final stock = _favoriteStocks[index];
-                    return ListTile(
-                      title: Text(stock.name),
-                      subtitle: Text("${stock.symbol} • ${stock.country}"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text("\$${stock.price.toStringAsFixed(2)}"),
-                          const SizedBox(width: 10),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            ),
-                            onPressed: () => _toggleFavorite(index),
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CompanyDetailsPage(stock: stock),
-                          ),
-                        ).then((_) => _loadFavorites()); // Refresh when coming back
-                      },
-                    );
-                  },
+      body: _favoriteStocks.isEmpty
+          ? const Center(child: Text("No favorites yet"))
+          : ListView.builder(
+        itemCount: _favoriteStocks.length,
+        itemBuilder: (context, index) {
+          final stock = _favoriteStocks[index];
+          return ListTile(
+            title: Text(stock.name),
+            subtitle: Text("${stock.symbol} • ${stock.country}"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("\$${stock.price.toStringAsFixed(2)}"),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(
+                    Icons.remove,
+                    color: Colors.red,
+                  ),
+                  onPressed: () => _toggleFavorite(index),
                 ),
+              ],
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      CompanyDetailsPage(stock: stock),
+                ),
+              ).then((_) => _loadFavorites());
+            },
+          );
+        },
+      ),
     );
   }
 }
