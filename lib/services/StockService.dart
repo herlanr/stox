@@ -38,10 +38,8 @@ class StockService {
   Future<List<Stock>> getTopGainers() async {
     final stocks = await loadStocks();
     
-    // Sort by percentChange in descending order
     stocks.sort((a, b) => b.percentChange.compareTo(a.percentChange));
     
-    // Take the top 5
     return stocks.take(5).toList();
   }
 

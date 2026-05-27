@@ -38,7 +38,7 @@ class _CompanySearchWidgetState extends State<CompanySearchWidget> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          onSubmitted: (_) => searchCompany(), // Enter gedrückt
+          onSubmitted: (_) => searchCompany(),
         );
 
   }

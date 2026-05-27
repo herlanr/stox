@@ -22,7 +22,6 @@ class _HomePageState extends State<HomePage> {
     _loadTopStocks();
   }
 
-  // Ganz simpel: Daten laden und UI direkt aktualisieren
   void _loadTopStocks() async {
     final stocks = await _stockService.getTopGainers();
     final favorites = await FavoritesService.getFavorites();
@@ -36,7 +35,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Nur die Favoriten-Herzen aktualisieren
   void _syncFavorites() async {
     final favorites = await FavoritesService.getFavorites();
 
