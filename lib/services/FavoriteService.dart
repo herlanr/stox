@@ -10,10 +10,7 @@ class FavoritesService {
 
   static Future<void> toggleFavorite(String symbol) async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> favorites =
-    prefs.getStringList(_key) != null
-        ? prefs.getStringList(_key)!
-        : [];
+    final favorites = await getFavorites();
 
     if (favorites.contains(symbol)) {
       favorites.remove(symbol);
