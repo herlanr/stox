@@ -15,7 +15,6 @@ class _CompanySearchWidgetState extends State<CompanySearchWidget> {
 
   void searchCompany() async {
     final text = _controller.text;
-    print("Search parameter = $text");
 
     final results = await stockService.search(text);
 
