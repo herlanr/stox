@@ -25,6 +25,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final favorites = await FavoritesService.getFavorites();
     final allStocks = await _stockService.loadStocks();
 
+    //used to update the UI
     setState(() {
       _favoriteStocks = allStocks.where((stock) {
         final isFav = favorites.contains(stock.symbol);
